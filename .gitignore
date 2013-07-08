@@ -1,0 +1,9 @@
+go/agents/vc-agent-007/vc-agent-007
+go/agents/vc-aggregator/vc-aggregator
+go/agents/vc-mysql-metrics/vc-mysql-metrics
+go/agents/vc-mysql-query/vc-mysql-query
+go/agents/vc-os-metrics/vc-os-metrics
+go/servers/api-server/api-server
+go/config/buildver.go
+.DS_Store
+.*.sw?
