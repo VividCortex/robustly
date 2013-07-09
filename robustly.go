@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"runtime/debug"
 	"time"
-	"github.com/VividCortex/moving_average"
+	"github.com/VividCortex/ewma"
 )
 
 func Run(function func(), options map[string]int) int {
@@ -15,7 +15,7 @@ func Run(function func(), options map[string]int) int {
 	timeout := options["timeout"]
 
 	// We use a moving average to compute the rate of errors per second.
-	avg := moving_average.NewMovingAverage(float64(timeout))
+	avg := ewma.NewMovingAverage(float64(timeout))
 	before := time.Now()
 	var startAboveLimit time.Time
 	var belowLimit bool = true
