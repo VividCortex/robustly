@@ -24,7 +24,7 @@ func Run(function func(), options map[string]int) int {
 	var oktorun bool = true
 
 	for oktorun {
-		fmt.Println("running function resiliently, panic rate %f since %s",
+		fmt.Printf("running function resiliently, panic rate %f since %s",
 								avg.Value(),
 								startAboveLimit,
 								)
@@ -67,7 +67,7 @@ func Run(function func(), options map[string]int) int {
 				var buf bytes.Buffer
 				fmt.Fprintf(&buf, "%v\n", localErr)
 				buf.Write(debug.Stack())
-				fmt.Println(buf.String())
+				fmt.Printf(buf.String())
 			}()
 			function()
 			return
