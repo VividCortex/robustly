@@ -9,7 +9,7 @@ import (
 	"github.com/VividCortex/ewma"
 )
 
-func Run(function func(), options map[string]int) int {
+func Run(function func(), options map[string]int64) int {
 	// Set config options
 	rateLimit := options["rateLimit"]
 	timeout := options["timeout"]

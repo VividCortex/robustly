@@ -11,7 +11,7 @@ import (
 
 func TestRobustly1(t *testing.T) {
 	tries := 0
-	options := map[string]int {
+	options := map[string]int64 {
 		"rateLimit": 1,
 		"timeout": 1,
 	}
@@ -29,7 +29,7 @@ func TestRobustly2(t *testing.T) {
 			t.Errorf("expected error, got nil")
 		}
 	}()
-	options := map[string]int {
+	options := map[string]int64 {
 		"rateLimit": 1,
 		"timeout": 1,
 	}
@@ -45,7 +45,7 @@ func TestRobustly3(t *testing.T) {
 			t.Errorf("got error %v, expected nil", err)
 		}
 	}()
-	options := map[string]int {
+	options := map[string]int64 {
 		"rateLimit": 1,
 		"timeout": 1,
 	}
