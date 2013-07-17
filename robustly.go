@@ -21,7 +21,7 @@ func Run(function func(), options ...float64) int {
 	rateLimit, timeout := 1.0, 1.0 // TODO
 
 	// We use a moving average to compute the rate of errors per second.
-	avg := ewma.NewMovingAverage(float64(timeout))
+	avg := ewma.NewMovingAverage(timeout)
 	before := time.Now()
 	var startAboveLimit time.Time
 	var belowLimit bool = true
@@ -46,7 +46,7 @@ func Run(function func(), options ...float64) int {
 					avg.Add(rate)
 
 					// Figure out whether we're above the rate limit and for how long
-					if avg.Value() > float64(rateLimit) {
+					if avg.Value() > rateLimit {
 						if belowLimit {
 							startAboveLimit = after
 						}
