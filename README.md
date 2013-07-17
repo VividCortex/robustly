@@ -82,17 +82,20 @@ line of code:
 robustly.Crash()
 ```
 
-Configure crash sites with CrashSetup(). Pass it a comma-separated string of crash
-sites, which are colon-separated file:line:probability specifications. Probability
-should range between 0 and 1. If you pass the special spec "VERBOSE", it will enable
+Configure crash sites with `CrashSetup()`. Pass it a comma-separated string of crash
+sites, which are colon-separated `file:line:probability` specifications. Probability
+should range between 0 and 1. If you pass the special spec `"VERBOSE"`, it will enable
 printouts of all crash sites that are located in your code.
 
 The idea is to match the crash sites configured in the setup with those actually
 present in your code. For example, if you have added a crash site in the code at
 line 53 of client.go, and you'd like to crash there, as well as at line 18 of server.go:
 
-  client.go:53:.003,server.go:18:.02
+    client.go:53:.003,server.go:18:.02
 
 That will cause a crash .003 of the time at client.go line 53, and .02 of the time
 at server.go line 18.
 
+If you are using `robustly.Run()` to make your code resilient to errors, it is a very
+good idea to deliberately inject errors and make sure they are indeed handled. You can
+easily miss a detail such as a potentially crashing function that is called as a goroutine.
