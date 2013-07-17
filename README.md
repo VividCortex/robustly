@@ -99,3 +99,11 @@ at server.go line 18.
 If you are using `robustly.Run()` to make your code resilient to errors, it is a very
 good idea to deliberately inject errors and make sure they are indeed handled. You can
 easily miss a detail such as a potentially crashing function that is called as a goroutine.
+
+## Contributing
+
+Contributions are welcome. Please send a pull request!
+
+## License
+
+This program is (c) VividCortex 2013, and is licensed under the MIT license. Please see the LICENSE file.
