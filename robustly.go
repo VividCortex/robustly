@@ -1,18 +1,21 @@
+// Package robustly provides code to handle (and create) infrequent panics.
 package robustly
-// Package robustly provides code to handle infrequent panics.
 
 import (
-	"bytes"
 	"fmt"
+	"github.com/VividCortex/ewma"
+	"os"
 	"runtime/debug"
 	"time"
-	"github.com/VividCortex/ewma"
 )
 
-func Run(function func(), options map[string]int64) int {
-	// Set config options
-	rateLimit := options["rateLimit"]
-	timeout := options["timeout"]
+// Run runs the given function robustly, catching and restarting on panics.
+// The optional options are a rate limit in crashes per second, and a timeout.
+// If the function panics more often than the rate limit, for longer than the
+// timeout, then Run aborts and re-throws the panic. A third option controls
+// whether to print the stack trace for panics that are intercepted.
+func Run(function func(), options ...float64) int {
+	rateLimit, timeout := 1.0, 1.0 // TODO
 
 	// We use a moving average to compute the rate of errors per second.
 	avg := ewma.NewMovingAverage(float64(timeout))
@@ -24,12 +27,6 @@ func Run(function func(), options map[string]int64) int {
 	var oktorun bool = true
 
 	for oktorun {
-		fmt.Printf("running function resiliently, panic rate %f since %s \n",
-								avg.Value(),
-								startAboveLimit,
-								)
-
-		// Run the provided code and catch errors.
 		func() {
 			defer func() {
 				localErr := recover()
@@ -64,10 +61,9 @@ func Run(function func(), options map[string]int64) int {
 						totalPanics, avg.Value(), startAboveLimit))
 				}
 
-				var buf bytes.Buffer
-				fmt.Fprintf(&buf, "%v\n", localErr)
-				buf.Write(debug.Stack())
-				//fmt.Printf(buf.String())
+				if len(options) > 2 && options[2] > 0 {
+					fmt.Fprintf(os.Stdout, "%v\n%s\n", localErr, debug.Stack())
+				}
 			}()
 			function()
 			return
