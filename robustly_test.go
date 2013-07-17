@@ -20,7 +20,7 @@ func panicRateIters(rate time.Duration, iters int, count *int) {
 }
 
 func TestRobustly1(t *testing.T) {
-	CrashSetup("robustly_test.go:15:1")
+	CrashSetup("robustly_test.go:18:1")
 	tries := 0
 
 	panics := Run(func() { panicRateIters(time.Second, 5, &tries) }, 1, 1)
@@ -38,7 +38,7 @@ func TestRobustly2(t *testing.T) { // just to be sure that crash site printout w
 }
 
 func TestRobustly3(t *testing.T) {
-	CrashSetup("robustly_test.go:15:1")
+	CrashSetup("robustly_test.go:18:1")
 	defer func() {
 		err := recover()
 		if err == nil {
@@ -51,7 +51,7 @@ func TestRobustly3(t *testing.T) {
 }
 
 func TestRobustly4(t *testing.T) {
-	CrashSetup("robustly_test.go:15:1")
+	CrashSetup("robustly_test.go:18:1")
 	defer func() {
 		err := recover()
 		if err != nil {
