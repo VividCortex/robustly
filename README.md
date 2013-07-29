@@ -15,7 +15,7 @@ go get github.com/VividCortex/robustly
 
 Now import the following in your code:
 
-```
+```go
 import (
 	"github.com/VividCortex/robustly"
 )
@@ -66,7 +66,7 @@ To use Run, simply wrap around the function call that represents
 the entry point to the code you wish to catch and restart:
 
 ```go
-	robustly.Run(func() { /* your code here */ }, 1, 1, 1)
+robustly.Run(func() { /* your code here */ }, 1, 1, 1)
 ```
 
 The function takes three options: a crash rate threshold, a crash timeout, and whether
@@ -78,7 +78,7 @@ Robustly also includes `Crash()`, a way to inject panics into your code at runti
 To use it, select places where you'd like to cause crashes, and add the following
 line of code:
 
-```
+```go
 robustly.Crash()
 ```
 
