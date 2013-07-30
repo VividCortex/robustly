@@ -32,6 +32,10 @@ func somefunc() {
 }
 ```
 
+### API Documentation
+
+View the GoDoc generated documentation [here](http://godoc.org/github.com/VividCortex/robustly).
+
 ### Robustly's Purpose
 
 Robustly is designed to help make Go programs more resilient to errors
