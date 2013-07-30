@@ -3,7 +3,7 @@
 Robustly runs code resiliently, recovering from occasional errors.
 It also gives you the ability to probabilistically inject panics into
 your application, configuring them at runtime at crash sites of your
-choosing. We use it at [VividCortex](https://vividcortex.com/)
+choosing. We use it at [VividCortex](https://vividcortex.com/blog/2013/07/30/writing-resilient-programs-with-go-and-robustly-run/)
 to ensure that unexpected problems don't disable our agent programs.
 
 ![Build Status](https://circleci.com/gh/VividCortex/robustly.png?circle-token=75e143a154914d6ecf50376b0d93b5401739c52e)
