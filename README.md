@@ -71,10 +71,10 @@ To use Run, simply wrap around the function call that represents
 the entry point to the code you wish to catch and restart:
 
 ```go
-robustly.Run(func() { /* your code here */ })
+robustly.Run(func() { /* your code here */ }, nil)
 ```
 
-### Using RunWithOptions
+To use the optional settings of Run, pass Run a pointer to a RunOptions struct.
 
 ```go
 // RunOptions is a struct to hold the optional arguments to Run.
@@ -82,19 +82,18 @@ type RunOptions struct {
         RateLimit  float64       // the rate limit in crashes per second
         Timeout    time.Duration // the timeout (after which Run will stop trying)
         PrintStack bool          // whether to print the panic stacktrace or not
-        Delay      time.Duration // inject a delay before retrying the run
+        RetryDelay time.Duration // inject a delay before retrying the run
 }
 ```
 
-To use the optional settings of Run, pass RunWithOptions a RunOptions struct, 
-default values are shown below.
+Default options are shown below:
 
 ```go
-robustly.RunWithOptions(func() { /* your code here */ }, robustly.RunOptions{
+robustly.Run(func() { /* your code here */ }, &robustly.RunOptions{
 	RateLimit:  1.0,
 	Timeout:    1 * time.Second,
-	PrintStack: false,
-	Delay:      0 * time.Nanosecond,
+   PrintStack: false,
+   RetryDelay: 0 * time.Nanosecond,
 })
 ```
 

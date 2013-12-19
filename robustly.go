@@ -31,10 +31,8 @@ type RunOptions struct {
 func Run(function func(), options *RunOptions) int {
 	if options == nil {
 		options = &RunOptions{
-			RateLimit:  1.0,
-			Timeout:    1 * time.Second,
-			PrintStack: false,
-			RetryDelay: 0 * time.Nanosecond,
+			RateLimit: 1.0,
+			Timeout:   1 * time.Second,
 		}
 	}
 	if options.RateLimit == 0 {
