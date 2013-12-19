@@ -12,34 +12,33 @@ import (
 	"time"
 )
 
-// Run runs the given function robustly, catching and restarting on panics.
-// Default parameters are:
-// RateLimit: 1.0,            // the rate limit in crashes per second
-// Timeout: 1 * time.Second,  // the timeout (after which Run will stop trying)
-// PrintStack: false,         // whether to print the panic stacktrace or not
-// Delay: 0 * time.Nanosecond // inject a delay before retrying the run
-func Run(function func()) int {
-	return RunWithOptions(function, RunOptions{
-		RateLimit:  1.0,
-		Timeout:    1 * time.Second,
-		PrintStack: false,
-		Delay:      0 * time.Nanosecond,
-	})
-}
-
 // RunOptions is a struct to hold the optional arguments to Run.
 type RunOptions struct {
 	RateLimit  float64       // the rate limit in crashes per second
 	Timeout    time.Duration // the timeout (after which Run will stop trying)
 	PrintStack bool          // whether to print the panic stacktrace or not
-	Delay      time.Duration // inject a delay before retrying the run
+	RetryDelay time.Duration // inject a delay before retrying the run
 }
 
 // Run runs the given function robustly, catching and restarting on panics.
-// Takes a RunOptions struct as options
-func RunWithOptions(function func(), options RunOptions) int {
+// Takes a RunOptions struct pointer as options, nil to use the default parameters.
+//
+//  Default parameters are:
+//  RateLimit: 1.0,                 // the rate limit in crashes per second
+//  Timeout: 1 * time.Second,       // the timeout (after which Run will stop trying)
+//  PrintStack: false,              // whether to print the panic stacktrace or not
+//  RetryDelay: 0 * time.Nanosecond // inject a delay before retrying the run
+func Run(function func(), options *RunOptions) int {
+	if options == nil {
+		options = &RunOptions{
+			RateLimit:  1.0,
+			Timeout:    1 * time.Second,
+			PrintStack: false,
+			RetryDelay: 0 * time.Nanosecond,
+		}
+	}
 	if options.RateLimit == 0 {
-		log.Print("[robustly] warning: the RateLimit is 0, which means if any panic occurs, Run will stop trying after the timeout")
+		log.Print("[robustly] warning: RateLimit is 0")
 	}
 	// We use a moving average to compute the rate of errors per second.
 	avg := ewma.NewMovingAverage(options.Timeout.Seconds())
@@ -51,9 +50,6 @@ func RunWithOptions(function func(), options RunOptions) int {
 	var oktorun bool = true
 
 	for oktorun {
-		if options.Delay > time.Nanosecond*0 {
-			time.Sleep(options.Delay)
-		}
 		func() {
 			defer func() {
 				localErr := recover()
@@ -90,6 +86,10 @@ func RunWithOptions(function func(), options RunOptions) int {
 
 				if options.PrintStack {
 					log.Printf("[robustly] %v\n%s\n", localErr, debug.Stack())
+				}
+
+				if options.RetryDelay > time.Nanosecond*0 {
+					time.Sleep(options.RetryDelay)
 				}
 			}()
 			function()
