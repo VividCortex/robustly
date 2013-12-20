@@ -22,12 +22,6 @@ type RunOptions struct {
 
 // Run runs the given function robustly, catching and restarting on panics.
 // Takes a RunOptions struct pointer as options, nil to use the default parameters.
-//
-//  Default parameters are:
-//  RateLimit: 1.0,                 // the rate limit in crashes per second
-//  Timeout: 1 * time.Second,       // the timeout (after which Run will stop trying)
-//  PrintStack: false,              // whether to print the panic stacktrace or not
-//  RetryDelay: 0 * time.Nanosecond // inject a delay before retrying the run
 func Run(function func(), options *RunOptions) int {
 	if options == nil {
 		options = &RunOptions{
