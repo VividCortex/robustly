@@ -79,10 +79,10 @@ To use the optional settings of Run, pass Run a pointer to a RunOptions struct.
 ```go
 // RunOptions is a struct to hold the optional arguments to Run.
 type RunOptions struct {
-        RateLimit  float64       // the rate limit in crashes per second
-        Timeout    time.Duration // the timeout (after which Run will stop trying)
-        PrintStack bool          // whether to print the panic stacktrace or not
-        RetryDelay time.Duration // inject a delay before retrying the run
+	RateLimit  float64       // the rate limit in crashes per second
+	Timeout    time.Duration // the timeout (after which Run will stop trying)
+	PrintStack bool          // whether to print the panic stacktrace or not
+	RetryDelay time.Duration // inject a delay before retrying the run
 }
 ```
 
@@ -92,8 +92,8 @@ Default options are shown below:
 robustly.Run(func() { /* your code here */ }, &robustly.RunOptions{
 	RateLimit:  1.0,
 	Timeout:    1 * time.Second,
-   PrintStack: false,
-   RetryDelay: 0 * time.Nanosecond,
+	PrintStack: false,
+	RetryDelay: 0 * time.Nanosecond,
 })
 ```
 
