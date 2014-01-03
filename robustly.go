@@ -7,21 +7,33 @@ package robustly
 import (
 	"fmt"
 	"github.com/VividCortex/ewma"
-	"os"
+	"log"
 	"runtime/debug"
 	"time"
 )
 
-// Run runs the given function robustly, catching and restarting on panics.
-// The optional options are a rate limit in crashes per second, and a timeout.
-// If the function panics more often than the rate limit, for longer than the
-// timeout, then Run aborts and re-throws the panic. A third option controls
-// whether to print the stack trace for panics that are intercepted.
-func Run(function func(), options ...float64) int {
-	rateLimit, timeout := 1.0, 1.0 // TODO
+// RunOptions is a struct to hold the optional arguments to Run.
+type RunOptions struct {
+	RateLimit  float64       // the rate limit in crashes per second
+	Timeout    time.Duration // the timeout (after which Run will stop trying)
+	PrintStack bool          // whether to print the panic stacktrace or not
+	RetryDelay time.Duration // inject a delay before retrying the run
+}
 
+// Run runs the given function robustly, catching and restarting on panics.
+// Takes a RunOptions struct pointer as options, nil to use the default parameters.
+func Run(function func(), options *RunOptions) int {
+	if options == nil {
+		options = &RunOptions{
+			RateLimit: 1.0,
+			Timeout:   1 * time.Second,
+		}
+	}
+	if options.RateLimit == 0 {
+		log.Print("[robustly] warning: RateLimit is 0")
+	}
 	// We use a moving average to compute the rate of errors per second.
-	avg := ewma.NewMovingAverage(timeout)
+	avg := ewma.NewMovingAverage(options.Timeout.Seconds())
 	before := time.Now()
 	var startAboveLimit time.Time
 	var belowLimit bool = true
@@ -46,12 +58,12 @@ func Run(function func(), options ...float64) int {
 					avg.Add(rate)
 
 					// Figure out whether we're above the rate limit and for how long
-					if avg.Value() > rateLimit {
+					if avg.Value() > options.RateLimit {
 						if belowLimit {
 							startAboveLimit = after
 						}
 						beforeTimeout =
-							after.Before(startAboveLimit.Add(time.Second * time.Duration(timeout)))
+							after.Before(startAboveLimit.Add(options.Timeout))
 						belowLimit = false
 					} else {
 						belowLimit = true
@@ -64,8 +76,12 @@ func Run(function func(), options ...float64) int {
 						totalPanics, avg.Value(), startAboveLimit))
 				}
 
-				if len(options) > 2 && options[2] > 0 {
-					fmt.Fprintf(os.Stdout, "%v\n%s\n", localErr, debug.Stack())
+				if options.PrintStack {
+					log.Printf("[robustly] %v\n%s\n", localErr, debug.Stack())
+				}
+
+				if options.RetryDelay > time.Nanosecond*0 {
+					time.Sleep(options.RetryDelay)
 				}
 			}()
 			function()
