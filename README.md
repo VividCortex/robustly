@@ -91,7 +91,7 @@ Default options are shown below:
 ```go
 robustly.Run(func() { /* your code here */ }, &robustly.RunOptions{
 	RateLimit:  1.0,
-	Timeout:    1 * time.Second,
+	Timeout:    time.Second,
 	PrintStack: false,
 	RetryDelay: 0 * time.Nanosecond,
 })
