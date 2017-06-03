@@ -20,10 +20,11 @@ const (
 
 // RunOptions is a struct to hold the optional arguments to Run.
 type RunOptions struct {
-	RateLimit  float64       // rate limit in crashes per second (defaults to DefaultRateLimit if zero)
-	Timeout    time.Duration // timeout after which Run will stop trying (defaults to DefaultTimeout if zero)
-	PrintStack bool          // whether to print the panic stacktrace or not
-	RetryDelay time.Duration // inject a delay before retrying the run
+	RateLimit  float64                // rate limit in crashes per second (defaults to DefaultRateLimit if zero)
+	Timeout    time.Duration          // timeout after which Run will stop trying (defaults to DefaultTimeout if zero)
+	RetryDelay time.Duration          // inject a delay before retrying the run
+	PrintStack bool                   // whether to print the panic stacktrace or not
+	Logger     func(v ...interface{}) // PrintStack logger, defaults to log.Println
 }
 
 // Run runs the given function robustly, catching and restarting on panics.
@@ -43,6 +44,11 @@ func Run(function func(), opts *RunOptions) int {
 		}
 		if options.Timeout == 0 {
 			options.Timeout = DefaultTimeout
+		}
+
+		// Default logger
+		if options.Logger == nil {
+			options.Logger = log.Println
 		}
 	}
 
@@ -91,7 +97,7 @@ func Run(function func(), opts *RunOptions) int {
 				}
 
 				if options.PrintStack {
-					log.Printf("[robustly] %v\n%s\n", localErr, debug.Stack())
+					options.Logger(fmt.Sprintf("[robustly] %v\n%s", localErr, debug.Stack()))
 				}
 
 				if options.RetryDelay > time.Nanosecond*0 {
