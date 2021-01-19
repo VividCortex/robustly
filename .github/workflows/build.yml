@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - go: 1.12
+            build-with: true
+          - go: 1.13
+            build-with: false
+          - go: 1.14
+            build-with: false
+          - go: 1.15
+            build-with: false
+    continue-on-error: ${{ matrix.build-with == false }}
+    name: Build with ${{ matrix.go }}
+    defaults:
+      run:
+        working-directory: src/github.com/${{ github.repository }}
+    env:
+      GOPATH: ${{ github.workspace }}
+      GO111MODULE: off
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v1
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Install dep
+      run: curl -s -L -o dep https://github.com/golang/dep/releases/download/v0.5.4/dep-linux-amd64 && chmod +x dep && sudo cp dep /usr/local/bin/
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - run: dep ensure -vendor-only
+
+    - name: Vet
+      run: go vet ./...
+
+    - name: Test
+      run: go test -vet=off -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+    - name: Upload code coverage report
+      if: matrix.build-with == true
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: bash <(curl -s https://raw.githubusercontent.com/VividCortex/codecov-bash/master/codecov)
