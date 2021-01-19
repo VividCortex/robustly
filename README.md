@@ -1,4 +1,4 @@
-## Robustly
+# robustly
 
 Robustly runs code resiliently, recovering from occasional errors.
 It also gives you the ability to probabilistically inject panics into
@@ -6,11 +6,11 @@ your application, configuring them at runtime at crash sites of your
 choosing. We use it at [VividCortex](https://vividcortex.com/blog/2013/07/30/writing-resilient-programs-with-go-and-robustly-run/)
 to ensure that unexpected problems don't disable our agent programs.
 
-![Build Status](https://circleci.com/gh/VividCortex/robustly.png?circle-token=75e143a154914d6ecf50376b0d93b5401739c52e)
+![build](https://github.com/VividCortex/robustly/workflows/build/badge.svg)
 
-### Getting Started
+## Getting Started
 
-```
+```sh
 go get github.com/VividCortex/robustly
 ```
 
@@ -18,21 +18,21 @@ Now import the following in your code:
 
 ```go
 import (
-	"github.com/VividCortex/robustly"
+    "github.com/VividCortex/robustly"
 )
 
 func main() {
-	go robustly.Run(func() { somefunc() })
+    go robustly.Run(func() { somefunc() })
 }
 
 func somefunc() {
-	for {
-		// do something here that may panic
-	}
+    for {
+        // do something here that may panic
+    }
 }
 ```
 
-### API Documentation
+## API Documentation
 
 View the GoDoc generated documentation [here](http://godoc.org/github.com/VividCortex/robustly).
 
@@ -79,10 +79,10 @@ To use the optional settings of Run, pass Run a pointer to a RunOptions struct.
 ```go
 // RunOptions is a struct to hold the optional arguments to Run.
 type RunOptions struct {
-	RateLimit  float64       // the rate limit in crashes per second
-	Timeout    time.Duration // the timeout (after which Run will stop trying)
-	PrintStack bool          // whether to print the panic stacktrace or not
-	RetryDelay time.Duration // inject a delay before retrying the run
+    RateLimit  float64       // the rate limit in crashes per second
+    Timeout    time.Duration // the timeout (after which Run will stop trying)
+    PrintStack bool          // whether to print the panic stacktrace or not
+    RetryDelay time.Duration // inject a delay before retrying the run
 }
 ```
 
@@ -90,10 +90,10 @@ Default options are shown below:
 
 ```go
 robustly.Run(func() { /* your code here */ }, &robustly.RunOptions{
-	RateLimit:  1.0,
-	Timeout:    time.Second,
-	PrintStack: false,
-	RetryDelay: 0 * time.Nanosecond,
+    RateLimit:  1.0,
+    Timeout:    time.Second,
+    PrintStack: false,
+    RetryDelay: 0 * time.Nanosecond,
 })
 ```
 
@@ -116,7 +116,9 @@ The idea is to match the crash sites configured in the setup with those actually
 present in your code. For example, if you have added a crash site in the code at
 line 53 of client.go, and you'd like to crash there, as well as at line 18 of server.go:
 
+```txt
     client.go:53:.003,server.go:18:.02
+```
 
 That will cause a crash .003 of the time at client.go line 53, and .02 of the time
 at server.go line 18.
