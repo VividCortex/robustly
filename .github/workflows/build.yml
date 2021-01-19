@@ -36,13 +36,13 @@ jobs:
       with:
         go-version: ${{ matrix.go }}
 
-    - name: Install dep
-      run: curl -s -L -o dep https://github.com/golang/dep/releases/download/v0.5.4/dep-linux-amd64 && chmod +x dep && sudo cp dep /usr/local/bin/
-
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - run: dep ensure -vendor-only
+    - name: Install dep
+      run: curl -s -L -o dep https://github.com/golang/dep/releases/download/v0.5.4/dep-linux-amd64 && chmod +x dep && sudo mv dep /usr/local/bin/
+
+    - run: dep ensure -v -vendor-only
 
     - name: Vet
       run: go vet ./...
