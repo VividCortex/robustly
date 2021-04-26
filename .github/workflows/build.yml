@@ -4,7 +4,19 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - .github/**
+      - .gitignore
+      - .whitesource
+      - codecov.yml
+      - README.md
   pull_request:
+    paths-ignore:
+      - .github/**
+      - .gitignore
+      - .whitesource
+      - codecov.yml
+      - README.md
 
 jobs:
   build:
@@ -13,22 +25,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - go: 1.12
-            build-with: true
-          - go: 1.13
-            build-with: false
-          - go: 1.14
-            build-with: false
           - go: 1.15
+            build-with: true
+          - go: 1.16
             build-with: false
     continue-on-error: ${{ matrix.build-with == false }}
     name: Build with ${{ matrix.go }}
-    defaults:
-      run:
-        working-directory: src/github.com/${{ github.repository }}
     env:
-      GOPATH: ${{ github.workspace }}
-      GO111MODULE: off
+      GO111MODULE: on
 
     steps:
     - name: Set up Go
@@ -38,13 +42,6 @@ jobs:
 
     - name: Checkout code
       uses: actions/checkout@v2
-      with:
-        path: src/github.com/${{ github.repository }}
-
-    - name: Install dep
-      run: curl -s -L -o dep https://github.com/golang/dep/releases/download/v0.5.4/dep-linux-amd64 && chmod +x dep && sudo mv dep /usr/local/bin/
-
-    - run: dep ensure -v -vendor-only
 
     - name: Vet
       run: go vet ./...
